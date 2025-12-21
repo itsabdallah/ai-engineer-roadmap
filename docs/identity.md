@@ -5,7 +5,7 @@
 I am an Electrical & Electronics Engineering graduate transitioning into AI engineering and research, with a focus on **low‑resource natural language processing**.
 
 
-My long‑term goal is to build and study language models for **underserved languages**, particularly Somali, Swahili, and Turkish, and to contribute open, reproducible research that expands access to AI.
+My long‑term goal is to build and study language models for **underserved languages**, particularly Somali, and to contribute open, reproducible research that expands access to AI.
 
 
 ## Core Research Niche
