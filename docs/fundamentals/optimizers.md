@@ -1,4 +1,5 @@
 Optimizers (Implementation-Focused)
+
     An optimizer updates model parameters using gradients computed by autograd.
     It does not compute gradients — it only consumes param.grad and updates param.data.
 
