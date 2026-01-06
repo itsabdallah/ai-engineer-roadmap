@@ -1,85 +1,113 @@
-import torch
+# optimizers.py
+# Optimizers for our custom neural network engine
+# They operate directly on parameter.data using parameter.grad
+
+import math
 
 
-class SGD:
-    def __init__(self, params, lr=0.01):
+class Optimizer:
+    """
+    Base optimizer class.
+    Stores parameters and defines the interface.
+    """
+
+    def __init__(self, params):
         self.params = list(params)
+
+    def step(self):
+        raise NotImplementedError
+
+    def zero_grad(self):
+        for p in self.params:
+            p.grad = None
+
+
+class SGD(Optimizer):
+    """
+    Stochastic Gradient Descent
+    Update rule:
+        param = param - lr * grad
+    """
+
+    def __init__(self, params, lr=0.01):
+        super().__init__(params)
         self.lr = lr
 
     def step(self):
-        for param in self.params:
-            if param.grad is None:
+        for p in self.params:
+            if p.grad is None:
                 continue
-            param.data -= self.lr * param.grad
-
-    def zero_grad(self):
-        for param in self.params:
-            if param.grad is not None:
-                param.grad.zero_()
+            p.data -= self.lr * p.grad
 
 
-class SGDMomentum:
+class SGDMomentum(Optimizer):
+    """
+    SGD with Momentum
+
+    velocity = beta * velocity + grad
+    param = param - lr * velocity
+    """
+
     def __init__(self, params, lr=0.01, beta=0.9):
-        self.params = list(params)
+        super().__init__(params)
         self.lr = lr
         self.beta = beta
-        self.velocity = [torch.zeros_like(p) for p in self.params]
+        self.velocity = {}
+
+        for p in self.params:
+            self.velocity[p] = 0.0
 
     def step(self):
-        for i, param in enumerate(self.params):
-            if param.grad is None:
+        for p in self.params:
+            if p.grad is None:
                 continue
-            self.velocity[i] = self.beta * self.velocity[i] + param.grad
-            param.data -= self.lr * self.velocity[i]
 
-    def zero_grad(self):
-        for param in self.params:
-            if param.grad is not None:
-                param.grad.zero_()
+            v = self.velocity[p]
+            v = self.beta * v + p.grad
+            self.velocity[p] = v
+
+            p.data -= self.lr * v
 
 
-class Adam:
+class Adam(Optimizer):
+    """
+    Adam Optimizer
+
+    Maintains:
+        m -> first moment (mean of gradients)
+        v -> second moment (mean of squared gradients)
+
+    Bias-corrected updates are applied.
+    """
+
     def __init__(self, params, lr=0.001, beta1=0.9, beta2=0.999, eps=1e-8):
-        self.params = list(params)
+        super().__init__(params)
         self.lr = lr
         self.beta1 = beta1
         self.beta2 = beta2
         self.eps = eps
 
-        self.m = [torch.zeros_like(p) for p in self.params]
-        self.v = [torch.zeros_like(p) for p in self.params]
+        self.m = {}
+        self.v = {}
         self.t = 0
+
+        for p in self.params:
+            self.m[p] = 0.0
+            self.v[p] = 0.0
 
     def step(self):
         self.t += 1
-        for i, param in enumerate(self.params):
-            if param.grad is None:
+
+        for p in self.params:
+            if p.grad is None:
                 continue
 
-            grad = param.grad
+            g = p.grad
 
-            self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * grad
-            self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * grad.pow(2)
+            self.m[p] = self.beta1 * self.m[p] + (1 - self.beta1) * g
+            self.v[p] = self.beta2 * self.v[p] + (1 - self.beta2) * (g ** 2)
 
-            m_hat = self.m[i] / (1 - self.beta1 ** self.t)
-            v_hat = self.v[i] / (1 - self.beta2 ** self.t)
+            m_hat = self.m[p] / (1 - self.beta1 ** self.t)
+            v_hat = self.v[p] / (1 - self.beta2 ** self.t)
 
-            param.data -= self.lr * m_hat / (torch.sqrt(v_hat) + self.eps)
-
-    def zero_grad(self):
-        for param in self.params:
-            if param.grad is not None:
-                param.grad.zero_()
-
-
-if __name__ == "__main__":
-    # Minimal sanity check
-    w = torch.tensor([1.0, 2.0], requires_grad=True)
-    loss = (w ** 2).sum()
-    loss.backward()
-
-    opt = Adam([w])
-    opt.step()
-    opt.zero_grad()
-
-    print("Updated weights:", w)
+            p.data -= self.lr * m_hat / (math.sqrt(v_hat) + self.eps)
