@@ -23,23 +23,21 @@ class LinearLayer:
     """
 
     def __init__(self, in_features, out_features):
-        # Weight matrix: (in_features, out_features)
-        self.W = torch.randn(in_features, out_features, requires_grad=True)
+        # Create leaf tensors explicitly
+        W = torch.randn(in_features, out_features)
+        W.requires_grad_()
+        self.W = W
 
-        # Bias vector: (out_features,)
-        self.b = torch.zeros(out_features, requires_grad=True)
+        b = torch.zeros(out_features)
+        b.requires_grad_()
+        self.b = b
 
     def forward(self, x):
-        """
-        Forward pass through the linear layer
-        """
         return x @ self.W + self.b
 
     def parameters(self):
-        """
-        Returns parameters so an optimizer can update them
-        """
         return [self.W, self.b]
+
 
 
 class MLP:
