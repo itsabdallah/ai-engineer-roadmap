@@ -3,7 +3,7 @@
 # They operate directly on parameter.data using parameter.grad
 
 import math
-
+import torch
 
 class Optimizer:
     """
@@ -103,11 +103,15 @@ class Adam(Optimizer):
                 continue
 
             g = p.grad
-
+            # First moment
             self.m[p] = self.beta1 * self.m[p] + (1 - self.beta1) * g
+
+            # Second moment
             self.v[p] = self.beta2 * self.v[p] + (1 - self.beta2) * (g ** 2)
 
+            #Bias correction
             m_hat = self.m[p] / (1 - self.beta1 ** self.t)
             v_hat = self.v[p] / (1 - self.beta2 ** self.t)
 
-            p.data -= self.lr * m_hat / (math.sqrt(v_hat) + self.eps)
+            # Parameter update
+            p.data -= self.lr * m_hat / (torch.sqrt(v_hat) + self.eps)
