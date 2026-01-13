@@ -1,25 +1,29 @@
 Optimizers (Implementation-Focused)
-
-    An optimizer updates model parameters using gradients computed by autograd.
+--
+An optimizer updates model parameters using gradients computed by autograd.
     It does not compute gradients — it only consumes param.grad and updates param.data.
 
-    The standard training step looks like:
+The standard training step looks like:
 
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
 
 
-    Everything below explains what happens inside optimizer.step().
+Everything below explains what happens inside optimizer.step().
 
 Parameters and Gradients
-    Each trainable parameter is a torch.Tensor with:
-        -param.data → parameter values
-        -param.grad → gradient of the loss with respect to the parameter
+--
+ Each trainable parameter is a torch.Tensor with:
+ 
+        param.data → parameter values
+        param.grad → gradient of the loss with respect to the parameter
+Optimizers iterate over parameters and apply update rules using param.grad.
 
-    Optimizers iterate over parameters and apply update rules using param.grad.
-
+---
 1. Stochastic Gradient Descent (SGD)
+---
+
     Update Rule
         param = param − lr × grad
 
@@ -32,6 +36,7 @@ Parameters and Gradients
         -Sensitive to learning rate choice
 
 2. SGD with Momentum
+---
     Momentum introduces a velocity term to accumulate past gradients and smooth updates.
 
     State per Parameter
@@ -50,7 +55,7 @@ Parameters and Gradients
         -Accelerates convergence in consistent directions
 
 3. Adam Optimizer
-
+---
 Adam combines:
     -Momentum (first moment)
     -Adaptive learning rates (second moment)
@@ -104,10 +109,12 @@ Gradient Reset (zero_grad)
         optimizer.step()
 
 Summary
-    Component	Role
-        param.data	Parameter values
-        param.grad	Gradient from autograd
-        Optimizer	Updates parameters
-        Momentum	Smooths updates
-        Adam	Adaptive + momentum
-        zero_grad()	Prevents accumulation
+
+
+Component	Role
+param.data	Parameter values
+param.grad	Gradient from autograd
+Optimizer	Updates parameters
+Momentum	Smooths updates
+Adam	Adaptive + momentum
+zero_grad()	Prevents accumulation

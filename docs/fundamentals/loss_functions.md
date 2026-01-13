@@ -55,9 +55,9 @@ loss = mean((prediction − target)²)
 
 ### Code Mapping
 
- -diff = prediction - target
- -squared_diff = diff ** 2
- -loss = squared_diff.mean()
+    diff = prediction - target
+    squared_diff = diff ** 2
+    loss = squared_diff.mean()
 
 
  
@@ -76,17 +76,17 @@ Binary classification tasks (labels are 0 or 1).
 Binary Cross Entropy measures the distance between predicted probabilities and true binary labels.
 
 ### Formula
-loss = −[y · log(p) + (1 − y) · log(1 − p)]
+    loss = −[y · log(p) + (1 − y) · log(1 − p)]
 
 ### Numerical Stability
 Predictions are clamped to avoid log(0), which would produce NaNs.
 
 ### Code Mapping
 
-prediction = clamp(prediction)
-loss = -(target * log(prediction)
-+ (1 - target) * log(1 - prediction))
-loss = loss.mean()
+    prediction = clamp(prediction)
+    loss = -(target * log(prediction)
+    + (1 - target) * log(1 - prediction))
+    loss = loss.mean()
 
 
 
@@ -110,13 +110,13 @@ Softmax and logarithm are combined using log-softmax for numerical stability.
 3. Compute negative log-likelihood
 
 ### Formula
-loss = −mean(log(p_correct_class))
+    loss = −mean(log(p_correct_class))
 
 ### Code Mapping
 
-log_probs = log_softmax(logits)
-correct_log_probs = log_probs[batch_indices, target]
-loss = -correct_log_probs.mean()
+    log_probs = log_softmax(logits)
+    correct_log_probs = log_probs[batch_indices, target]
+    loss = -correct_log_probs.mean()
 
 
 
@@ -126,15 +126,15 @@ loss = -correct_log_probs.mean()
 
 Typical training sequence:
   
-prediction = model(x)
+    prediction = model(x)
 
-loss = loss_fn(prediction, y)
+    loss = loss_fn(prediction, y)
 
-loss.backward()
+    loss.backward()
 
-optimizer.step()
+    optimizer.step()
 
-optimizer.zero_grad()
+    optimizer.zero_grad()
 
 
 
