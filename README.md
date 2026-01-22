@@ -20,7 +20,7 @@ It is maintained as a long-term research workspace, not a tutorial collection.
 
 \- Language models for underserved languages
 
-\- Somali, Swahili, and Turkish corpora
+\- Somali, and Swahili corpora
 
 \- Reproducible, open research
 
